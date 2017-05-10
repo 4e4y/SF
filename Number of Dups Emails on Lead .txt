@@ -18,7 +18,7 @@ trigger LeadTrigger on Lead (before insert, before update) {
 
                 for (AggregateResult notuniquemail : notuniquemails){
 
-                    lead.NumberofDuplications__c = Integer.valueOf(String.valueOf(notuniquemails.get('NumberofDuplications__c')));
+                    lead.NumberofDuplications__c = Integer.valueOf(String.valueOf(notuniquemails.get('email')));
                     system.debug('======>'+String.valueOf(notuniquemails.get('email')));
 
                 }               
