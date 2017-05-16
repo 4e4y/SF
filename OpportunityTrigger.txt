@@ -1,0 +1,30 @@
+trigger OpportunityTrigger on Opportunity (before Update, before Insert) {
+    if (Trigger.IsBefore){
+        if(Trigger.isUpdate){
+            OpportunityPriceBook.updateOppotunityStage(trigger.new,trigger.oldmap);
+            
+            Map<String, DatedConversionRate> rates = DatedConversionRates.updateOppotunitybudgetRate();
+            for (Opportunity opp : trigger.new)
+            {
+               
+                DatedConversionRate d = rates.get(opp.CurrencyIsoCode);
+         
+                opp.DatedExchangeRates__c = d.ConversionRate;
+            } 
+        }
+    }
+    
+    if (Trigger.IsBefore){
+        if(Trigger.isInsert){
+            
+            Map<String, DatedConversionRate> rates = DatedConversionRates.updateOppotunitybudgetRate();
+            for (Opportunity opp : trigger.new)
+            {
+               
+                DatedConversionRate d = rates.get(opp.CurrencyIsoCode);
+               
+                opp.DatedExchangeRates__c = d.ConversionRate;
+            }
+        }
+    }
+}
