@@ -1,0 +1,42 @@
+
+
+
+
+
+
+trigger LeadTrigger on Lead (before insert, before update) {
+
+
+        Set<Id> LeadIds = new Set<Id>();
+
+         for (Lead Lead : Trigger.new) {
+
+                LeadIds.add(Lead.id);
+			
+         }
+
+            //List<AggregateResult> notuniquemails = ([SELECT count(id),email FROM lead where Email <> null GROUP BY Email]);
+    
+    
+   			List<AggregateResult> notuniquemails = ([SELECT count(id) FROM lead WHERE id IN:LeadIds AND Email <> null and GROUP BY Email]);
+				//system.debug('list' + Integer.valueOf(size(notuniquemails));
+
+            if(notuniquemails.Size()>0 ){
+
+
+                for (AggregateResult notuniquemail : notuniquemails){
+                    
+                     //System.debug('Bla' + notuniquemail.get('id'));
+                     System.debug('Average amount' + notuniquemail.get('expr0'));
+
+                   //lead.NumberofDuplications__c == Integer.valueOf(String.valueOf(notuniquemails.get(expr0)));
+                   // system.debug('======>'+String.valueOf(notuniquemails.get('email')));
+
+                }               
+            }
+            
+}
+
+// https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm
+// https://developer.salesforce.com/docs/atlas.en-us.206.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_count.htm?search_text=AggregateResult
+// https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_alias.htm

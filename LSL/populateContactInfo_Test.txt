@@ -1,0 +1,62 @@
+@isTest
+public class populateContactInfo_Test {
+     static testMethod void theTests(){
+         
+        Contact newCont = new Contact();
+        
+        newCont.FirstName = 'Alex';
+        newCont.LastName = 'Smith';
+        newCont.Zone__c = 'Europe';
+        newCont.LeadSource = 'Other';
+        newCont.Phone = '65432';
+        
+        insert newCont;      
+         
+        Account acc1 = new Account();
+        
+        acc1.Name = 'New Account';
+        acc1.Customer_Status__c = 'Customer';
+        acc1.Industry = 'Banking';
+        acc1.Customer_Type__c = 'Enterprise';
+        
+        insert acc1;
+       
+        Opportunity newOpp = new Opportunity ();
+        newOpp.Name = 'OppToClone';
+        newOpp.StageName = 'Lead';
+        newOpp.AccountId = acc1.id;
+        newOpp.Amount = 222.12;
+        newOpp.TotalOpportunityQuantity = 1234;
+        newOpp.CloseDate = date.today(); 
+        newOpp.ForecastCategoryName = 'Pipeline';
+        newOpp.OwnerId = '0050O000006Rs4G';
+        newOpp.StageName = 'Suspect';
+        newOpp.Type = 'Existing Business';
+        newOpp.Contract_Start_Date__c = date.today();
+        newOpp.Length_of_contract_in_months__c = 12;
+        newOpp.LeadSource = '--None--';
+         
+        insert newOpp;
+
+        Account acc = [Select id, Name from Account];
+        Opportunity opp = [Select id, Name from Opportunity];
+        Contact Cont= [Select id, Name,email,Phone from Contact];
+         
+        Quote newQ = new Quote ();
+         
+        newQ.Name = 'test Q';
+        newQ.status = 'Draft';
+        newQ.ContactId = newCont.Id;
+        newQ.OpportunityId = newOpp.id;
+        
+        insert newQ;
+         
+        newQ.Status = 'Accepted';
+        newQ.Additional_to_Name__c = newCont.id ;
+     newQ.Additional_to_Email__c = newCont.Email;
+        newQ.Additional_to_Phone__c = newCont.Phone;        
+         
+        update NewQ;
+         
+    }
+}

@@ -1,0 +1,22 @@
+
+trigger populateContactInfo on Quote (before insert , before update){
+    
+    Set<ID> setConIds = new Set<ID>();
+    for(Quote obj : trigger.new){
+        if(obj.Additional_to_Name__c!= null)
+            setConIds.add(obj.Additional_to_Name__c);
+    }
+    
+    MAP<ID, Contact> mapCon = new MAP<ID, Contact>([Select Id,Email,Phone from Contact where id in: setConIds]);
+    for(Quote obj : trigger.new) {
+       
+                if(obj.Additional_to_Name__c!= null) {
+                    Contact c = mapCon.get(obj.Additional_to_Name__c);
+                    obj.Additional_to_Email__c= c.Email;
+                    obj.Additional_to_Phone__c= c.Phone;
+                    
+                    //Similarly can assign Address fields as well, just add those field in Contact SOQL as well
+
+        }
+    }
+}

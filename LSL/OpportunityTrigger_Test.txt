@@ -1,0 +1,91 @@
+@isTest
+public class OpportunityTrigger_Test {
+    static testmethod void cloneTest() {
+             
+        Account acc = new Account();
+        
+        acc.Name = 'Test';
+        
+        insert acc;
+        system.debug('Account ' +acc);
+              
+        PriceBook2 customPriceBook = new PriceBook2();
+        
+        customPriceBook.Name='Custom Pricebook';
+        customPriceBook.IsActive=true;
+        
+        insert customPriceBook;
+        system.debug('CustomPriceBook ' +customPriceBook);
+        
+        Product2 newProd = new Product2 ();
+        
+        newProd.Name = 'Pilot';
+        newProd.Power_Pricing_Factor__c = 1;
+        newProd.Family = 'Custom Sales Price';
+       
+        insert newProd;
+        system.debug('NewProduct ' +newProd);
+        
+        PriceBookEntry pbEntry = new PriceBookEntry();
+        
+        pbEntry.UnitPrice = 300;
+        pbEntry.PriceBook2Id = Test.getStandardPricebookId();
+        pbEntry.Product2Id = newProd.Id;
+        pbEntry.IsActive = true;    
+        
+        insert pbEntry ;
+        
+        PriceBookEntry pbEntry2 = new PriceBookEntry();
+        
+        pbEntry2.UnitPrice = 300;
+        pbEntry2.PriceBook2Id = customPriceBook.Id;
+        pbEntry2.Product2Id = newProd.Id;
+        pbEntry2.IsActive = true;    
+        
+        insert pbEntry2 ;
+        system.debug('pbEntry2 ' +pbEntry2 );
+        
+        Opportunity newOpp = new Opportunity();
+        newOpp.AccountID = acc.Id;
+        newOpp.Name = 'OppToClone';
+        newOpp.StageName = 'Lead';
+        newOpp.AccountId = '0012000001Caa9W';
+        newOpp.Amount = 222.12;
+        newOpp.TotalOpportunityQuantity = 1234;
+        newOpp.CloseDate = date.today(); 
+        newOpp.ForecastCategoryName = 'Pipeline';
+        newOpp.OwnerId = '0050O000006Rs4G';
+        newOpp.Type = 'Existing Business';
+        newOpp.Contract_Start_Date__c = date.today();
+        newOpp.Length_of_contract_in_months__c = 12;
+        newOpp.LeadSource = '--None--';
+        newOpp.Pricebook2Id = Test.getStandardPricebookId();
+ 
+        
+        insert newOpp;
+        system.debug('Name'+ newOpp);
+        
+        
+        OpportunityLineItem oppLine = new OpportunityLineItem();
+        
+        oppLine.pricebookentryid=pbEntry.Id;
+        oppLine.TotalPrice=2000;
+        oppLine.Quantity = 2;
+        oppLine.OpportunityID = newOpp.Id;
+        oppLine.Duration__c = 1;
+        
+        insert oppLine;
+        
+        delete oppLine;
+        
+        update newOpp;
+        
+        PriceBook2 PBS = [Select id  from PriceBook2];
+        newOpp.Pricebook2Id=PBS.id;
+        
+        update newOpp;
+     
+        system.AssertNotEquals(newOpp.StageName, 'Suspect');
+      
+    }
+}

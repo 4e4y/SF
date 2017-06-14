@@ -1,0 +1,79 @@
+trigger LeadTrigger on Lead (before update, before insert , after update) {
+    
+    if (Trigger.IsBefore){
+        for (Lead l : trigger.new)
+        {
+            
+            if ( l.Country == 'USA'  )
+            {
+                l.Zone__c = StateZoneHelper.findZone(l.State);
+                
+            }
+            if ( l.Country != 'USA')
+            {
+                l.Zone__c = CountryZoneHelper.findZone(l.Country);
+                
+            }
+            
+        }
+    }
+	
+***************************************************
+public class CountryZoneHelper {
+    private static List<StaticResource> srList = null;
+    public static string findZone(string state)
+    {
+        string zoneValue = null;
+        
+        if (srList == null)
+        {
+            srList = [Select body, name from StaticResource where Name = 'CountryZonesFile'];
+        }
+        
+        Map<String, String> zones = new Map<String, String>();
+        
+        system.debug('files: ' + srList.size());
+        
+        if (srList.size() > 0)
+        {
+            for(StaticResource sr : srList)
+            {             
+                String zonesData = sr.Body.toString();
+                
+                for(String part : zonesData.split('[\n\r]'))
+                {
+                    
+                    if (part.trim().length() == 0 )
+                    {
+                        continue;
+                    }
+                    
+                    String[] stateData = part.split('[|]');
+                    
+                    if (stateData.size() == 2)
+                    {
+                        
+                        zones.put(stateData[0].trim().toUpperCase(), stateData[1]);
+                    }
+                    else
+                    {
+                        System.debug('Invalid Zone information: ' + part);
+                    }
+                }
+            }
+        }
+        
+        if (zones.size() > 0)
+        {
+            if (state != null)
+            {
+                if (zones.containsKey(state.toUpperCase()))
+                {
+                    zoneValue = zones.get(state);
+                }
+            }
+        }
+        
+        return zoneValue;
+    }
+}

@@ -1,0 +1,48 @@
+@isTest
+public class ContactUtilities_Test {
+ static testmethod void cloneTest() {
+        
+        Account acc1 = new Account();
+        
+        acc1.Name = 'New Account';
+        acc1.Customer_Type__c = 'Enterprise';
+        acc1.Customer_Status__c = 'Customer';
+        acc1.Industry = 'Banking';
+        
+        insert acc1;
+        
+         Account acc = [Select id, Name from Account];
+        
+        // Create new Contact and set needed fields
+        Contact newCont = new Contact();
+        
+        newCont.FirstName = 'Alex';
+        newCont.LastName = 'Smith';
+      //  newCont.Zone__c = 'Europe';
+        newCont.LeadSource = 'Other';
+        newCont.Phone = '65432';
+        newCont.AccountId = acc.id;
+        
+        insert newCont;      
+      
+        // Clone Original Contact
+        // After successful cloning in clonedId we will have ID of the cloned Contact
+        String clonedId = ContactUtilities.cloneContact(newCont.Id);
+        
+        // Retrieve cloned Contact 
+        
+        Lead cloned = [select Id, FirstName,LeadSource,LastName,Name,Company,Email from Lead where Id = :clonedId];
+        
+        // Check if Contact is found
+        System.assert(cloned != null);
+        
+        // Check some fields
+        System.assertEquals(newCont.FirstName, cloned.FirstName);
+        System.assertEquals(newCont.LeadSource, cloned.LeadSource);
+        System.assertEquals(newCont.LastName, cloned.LastName);
+       // System.assertEquals(newCont.Zone__c, cloned.Zone__c);
+        System.assertEquals(newCont.email, cloned.email);
+        
+        
+    }
+}

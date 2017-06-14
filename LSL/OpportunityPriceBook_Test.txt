@@ -1,0 +1,212 @@
+@isTest
+public class OpportunityPriceBook_Test {
+    static testmethod void TestUpdateOppotunityStage()
+    {
+        Account acc = new Account();
+        
+        acc.Name = 'Test';
+        acc.Customer_Type__c = 'Enterprise';
+        acc.Customer_Status__c = 'Customer';
+        acc.Industry = 'Banking';
+        
+        insert acc;
+        system.debug('Account ' +acc);
+        
+        
+              
+        PriceBook2 customPriceBook = new PriceBook2();
+        
+        customPriceBook.Name='Custom Pricebook';
+        customPriceBook.IsActive=true;
+        
+        insert customPriceBook;
+        system.debug('CustomPriceBook ' +customPriceBook);
+        
+        Product2 newProd = new Product2 ();
+        
+        newProd.Name = 'Pilot';
+        newProd.Power_Pricing_Factor__c = 1;
+        newProd.Family = 'Custom Sales Price';
+       
+        insert newProd;
+        system.debug('NewProduct ' +newProd);
+        
+        PriceBookEntry pbEntry = new PriceBookEntry();
+        
+        pbEntry.UnitPrice = 300;
+        pbEntry.PriceBook2Id = Test.getStandardPricebookId();
+        pbEntry.Product2Id = newProd.Id;
+        pbEntry.IsActive = true;    
+        
+        insert pbEntry ;
+        
+        PriceBookEntry pbEntry2 = new PriceBookEntry();
+        
+        pbEntry2.UnitPrice = 300;
+        pbEntry2.PriceBook2Id = customPriceBook.Id;
+        pbEntry2.Product2Id = newProd.Id;
+        pbEntry2.IsActive = true;    
+        
+        insert pbEntry2 ;
+        system.debug('pbEntry2 ' +pbEntry2 );
+        
+        Opportunity newOpp = new Opportunity();
+        newOpp.AccountID = acc.Id;
+        newOpp.Name = 'OppToClone';
+        newOpp.StageName = 'Lead';
+        newOpp.AccountID = acc.id;
+        newOpp.Amount = 222.12;
+        newOpp.TotalOpportunityQuantity = 1234;
+        newOpp.CloseDate = date.today(); 
+        newOpp.ForecastCategoryName = 'Pipeline';
+        newOpp.OwnerId = '0050O000006Rs4G';
+        newOpp.Type = 'Existing Business';
+        newOpp.Contract_Start_Date__c = date.today();
+        newOpp.Length_of_contract_in_months__c = 12;
+        newOpp.LeadSource = '--None--';
+        newOpp.Pricebook2Id = Test.getStandardPricebookId();
+     
+        insert newOpp;
+        system.debug('Name'+ newOpp);
+       
+        OpportunityLineItem oppLine = new OpportunityLineItem();
+        
+        oppLine.pricebookentryid=pbEntry.Id;
+        oppLine.TotalPrice=2000;
+        oppLine.Quantity = 2;
+        oppLine.OpportunityID = newOpp.Id;
+        oppLine.Duration__c = 1;
+        
+        insert oppLine;
+        
+        delete oppLine;
+        
+        update newOpp;
+        
+        PriceBook2 PBS = [Select id  from PriceBook2];
+        newOpp.Pricebook2Id=PBS.id;
+        
+        update newOpp;
+     
+        system.AssertNotEquals(newOpp.StageName, 'Suspect');
+        
+         Contact newCont = new Contact();
+        
+        newCont.FirstName = 'Alex';
+        newCont.LastName = 'Smith';
+        newCont.Zone__c = 'Europe';
+        newCont.LeadSource = 'Other';
+        newCont.Phone = '65432';
+        
+        insert newCont;      
+         
+            
+        Opportunity newOpp2 = new Opportunity ();
+        newOpp2.Name = 'OppToClone';
+        newOpp2.StageName = 'Lead';
+        newOpp2.AccountId = acc.id;
+        newOpp2.Amount = 222.12;
+        newOpp2.TotalOpportunityQuantity = 1234;
+        newOpp2.CloseDate = date.today(); 
+        newOpp2.ForecastCategoryName = 'Pipeline';
+        newOpp2.OwnerId = '0050O000006Rs4G';
+        newOpp2.StageName = 'Suspect';
+        newOpp2.Type = 'Existing Business';
+        newOpp2.Contract_Start_Date__c = date.today();
+        newOpp2.Length_of_contract_in_months__c = 12;
+        newOpp2.LeadSource = '--None--';
+         
+        insert newOpp2;
+
+      // Account acc = [Select id, Name from Account];
+      //Opportunity opp = [Select id, Name from Opportunity];
+      //Contact Cont= [Select id, Name,email,Phone from Contact];
+         
+        Quote newQ = new Quote ();
+         
+        newQ.Name = 'test Q';
+        newQ.status = 'Draft';
+        newQ.ContactId = newCont.Id;
+        newQ.OpportunityId = newOpp.id;
+        
+        insert newQ;
+         
+        newQ.Status = 'Accepted';
+        newQ.Additional_to_Name__c = newCont.id ;
+        newQ.Additional_to_Email__c = newCont.Email;
+        newQ.Additional_to_Phone__c = newCont.Phone;        
+         
+        update NewQ;
+         
+        
+         Lead l = new Lead();
+        
+        l.LastName = 'Teles';
+        l.Company = 'Comapany Teles';
+        l.Status = 'MQl/Open';
+        l.LeadSource = 'Website/SEO';
+        l.Country = 'US';
+        l.State ='LA';
+        
+        insert l;
+        
+        Lead lUS = new Lead();
+        
+        lUS.LastName = 'Teles';
+        lUS.Company = 'Comapany Teles';
+        lUS.Status = 'MQl/Open';
+        lUS.LeadSource = 'Website/SEO';
+        lUS.Country = 'United States';
+        lUS.State ='LA';
+        
+        insert lUS;
+        
+      Lead lCanada = new Lead();
+        
+        lCanada.LastName = 'Teles';
+        lCanada.Company = 'Comapany Teles';
+        lCanada.Status = 'MQl/Open';
+        lCanada.LeadSource = 'Website/SEO';
+        lCanada.Country = 'Canada';
+        lCanada.State ='ON';
+        
+        insert lCanada;
+        
+        
+         Lead lCANADAs = new Lead();
+        
+        lCANADAs.LastName = 'Teles';
+        lCANADAs.Company = 'Comapany Teles';
+        lCANADAs.Status = 'MQl/Open';
+        lCANADAs.LeadSource = 'Website/SEO';
+        lCANADAs.Country = 'CANADA';
+        lCANADAs.State ='ON';
+        
+        insert lCANADAs;
+        
+        
+        Task t = new Task(); 
+        t.OwnerId = '0050O000006Rs4G';
+        t.Subject = 'Lifecycle Status Change';
+        t.Priority = 'Normal';
+        t.Status = 'Completed';
+        t.Description = l.Description;
+        t.Entered_Stage_Date_Time__c = datetime.now();
+        
+        insert t;  
+        
+         Lead ls = new Lead();
+        
+        ls.LastName = 'Teles';
+        ls.Company = 'Comapany Teles';
+        ls.Status = 'MQl/Open';
+        ls.LeadSource = 'Website/SEO';
+        ls.Country = 'MEXICO';
+      
+        
+        insert ls;
+        
+    }        
+        
+    
+}

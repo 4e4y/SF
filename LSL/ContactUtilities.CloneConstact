@@ -1,0 +1,63 @@
+global with sharing class ContactUtilities
+{
+    webservice static String cloneContact(String contactId)
+    {
+    
+            String a = '';
+        Contact cont = [select 
+                           AccountId,
+                           FirstName,
+                           LastName,
+                           Zone__c,
+                           LeadSource,
+                           Name,
+                           OwnerId,
+                           CurrencyIsoCode,
+                           Lead_Source__c,
+                           Type__c,
+                           Industry__c,
+                           Email,
+                           Phone,
+                           Title,
+                           Email_Opt_In__c,
+                           HasOptedOutOfEmail,
+                           MailingCountry,
+                           MailingCity,
+                           MailingStreet,
+                           MailingState,
+                           MailingPostalCode,
+                           Account_Name__c
+         
+                        
+                           from Contact where Id = :contactId];
+        if (cont != null)
+        {
+            Lead newLead =new Lead();
+             newLead.FirstName =cont.FirstName;
+            newLead.LastName =cont.Lastname;
+            newLead.Company= cont.Account_Name__c;
+            newLead.OwnerId = cont.OwnerId;
+            newLead.Lead_Source__c = cont.Lead_Source__c;
+            newLead.LeadSource = cont.LeadSource;
+            newLead.CurrencyIsoCode = cont.CurrencyIsoCode;
+            newLead.Status = 'Unqualified';
+            newLead.Email = cont.Email;
+            newLead.phone = cont.phone;
+            newLead.Email_Opt_In__c = cont.Email_Opt_In__c;
+            newLead.HasOptedOutOfEmail = cont.HasOptedOutOfEmail;
+            newLead.Title = cont.Title;
+            newLead.Street = cont.MailingStreet;
+            newLead.Country = cont.MailingCountry;
+            newLead.State = cont.MailingState; 
+            newLead.City = cont.MailingCity; 
+            newLead.PostalCode = cont.MailingPostalCode; 
+            newLead.Zone__c = cont.Zone__c;
+            newLead.Type__c = cont.Type__c;
+            newLead.Industry = cont.Industry__c;
+            insert newLead;
+             a = newLead.Id;
+        }
+        
+        return a;
+    }
+}

@@ -1,0 +1,28 @@
+public class DatedConversionRates {
+    public static map<String, DatedConversionRate> updateOppotunitybudgetRate (){
+        map<String, DatedConversionRate> rates = new Map<String, DatedConversionRate>(); 
+
+        for (DatedConversionRate dcr : [SELECT ConversionRate,CreatedById,CreatedDate,Id,IsoCode,LastModifiedById,LastModifiedDate,NextStartDate,StartDate,SystemModstamp FROM DatedConversionRate order by IsoCode desc, LastModifiedDate desc])
+        {
+        
+            if (rates.containsKey(dcr.IsoCode))
+            {
+            
+                DatedConversionRate d = rates.get(dcr.IsoCode);
+                
+                if (d.LastModifiedDate < dcr.LastModifiedDate)
+                {
+                    rates.remove(dcr.IsoCode);
+                    rates.put(dcr.IsoCode, dcr);
+                }
+            }
+            else
+            {
+       
+                rates.put(dcr.IsoCode, dcr);
+            }
+        }
+        
+        return rates;
+    }
+}

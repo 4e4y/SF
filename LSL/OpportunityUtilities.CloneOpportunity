@@ -1,0 +1,66 @@
+global with sharing class OpportunityUtilities
+{
+    webservice static String cloneOpportunity(String opportunityId)
+    { 
+   
+            String a = '';
+        Opportunity opp = [select 
+                           AccountId,
+                           Amount,
+                           CampaignId,
+                           CloseDate,
+                           ContractId,
+                           Description,
+                           ExpectedRevenue,
+                           ForecastCategory,
+                           ForecastCategoryName,
+                           HasOpenActivity,
+                           HasOpportunityLineItem,
+                           HasOverdueTask,
+                           IsClosed,
+                           IsDeleted,
+                           IsWon,
+                           LastActivityDate,
+                           LastReferencedDate,
+                           LastViewedDate,
+                           LeadSource,
+                           Name,
+                           NextStep,
+                           OwnerId,
+                           Pricebook2Id,
+                           Probability,
+                           StageName,
+                           TotalOpportunityQuantity,
+                           Contract_Start_Date__c,
+                           Contract_end_date__c,
+                           Length_of_contract_in_months__c,
+                           CurrencyIsoCode,
+                           
+                           Type
+                           from Opportunity where Id = :opportunityId];
+        if (opp != null)
+        {
+            Opportunity newOpp = new Opportunity();
+            newOpp.AccountId = opp.AccountId;
+            newOpp.Amount = opp.Amount;
+            newOpp.CampaignId = opp.CampaignId;
+            newOpp.CloseDate =opp.Contract_end_date__c.addMonths(-1);
+            newOpp.ForecastCategoryName = opp.ForecastCategoryName; 
+            newOpp.Name = opp.Name + ' 2017';
+            newOpp.OwnerId = opp.OwnerId;
+            newOpp.Pricebook2Id = opp.Pricebook2Id;
+            newOpp.StageName = 'Suspect';
+            newOpp.TotalOpportunityQuantity = opp.TotalOpportunityQuantity;
+            newOpp.Type = 'Existing Business';
+            newOpp.Contract_Start_Date__c = opp.Contract_end_date__c.addDays(1);
+            newOpp.Length_of_contract_in_months__c = opp.Length_of_contract_in_months__c;
+            newOpp.LeadSource = '--None--';
+            newOpp.CurrencyIsoCode = opp.CurrencyIsoCode;
+            
+            insert newOpp;
+             a = newOpp.Id;
+        }
+        
+        return a;
+    }
+}

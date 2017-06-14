@@ -1,0 +1,19 @@
+public class OpportunityPriceBook {
+    public static void updateOppotunityStage (List<Opportunity> triggernew,Map<Id, Opportunity> triggeroldmap){
+        List <ID> setOppPBId = new List<ID>();
+        for(Opportunity Opp: triggernew){
+            if(Opp.Pricebook2Id !=null )
+                setOppPBId.add(Opp.Pricebook2Id);
+            system.debug('Opp' + Opp);
+        }
+        MAP<ID, Opportunity> mapOpp = new MAP<ID, Opportunity >([Select Id,PriceBook2Id from Opportunity where id in: setOppPBId]);
+        system.debug('mapOpp'+ mapOpp);
+        for(Opportunity Opp: triggernew){
+            
+            if(Opp.Pricebook2Id != triggeroldmap.get(Opp.Id).Pricebook2Id){
+                Opp.StageName = 'Suspect';
+                
+            }
+        }
+    }
+}

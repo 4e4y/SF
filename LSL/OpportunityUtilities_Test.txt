@@ -1,0 +1,51 @@
+@isTest
+public class OpportunityUtilities_Test {
+    static testmethod void cloneTest()
+    {
+        /// Create new Opportunity and set needed fields
+        Opportunity newOpp = new Opportunity();
+        /// Mandatory fields - these fields may be changed during clone process so we will use other fields for comparision
+        newOpp.Name = 'OppToClone';
+        newOpp.StageName = 'Lead';
+        newOpp.AccountId = '0012000001Caa9W';
+
+        /// Fields for comparision
+        newOpp.Amount = 222.12;
+        newOpp.TotalOpportunityQuantity = 1234;
+        newOpp.CloseDate = date.today(); 
+        newOpp.ForecastCategoryName = 'Pipeline';
+        newOpp.OwnerId = '0050O000006Rs4G';
+        newOpp.StageName = 'Suspect';
+        newOpp.Type = 'Existing Business';
+        newOpp.Contract_Start_Date__c = date.today();
+        newOpp.Length_of_contract_in_months__c = 12;
+        newOpp.LeadSource = '--None--';
+        //newOpp.CurrencyIsoCode = '01L200000002iwq';
+        
+        
+        /// Insert Original Opportunity
+        insert newOpp;
+        system.debug('Name'+ newOpp.Name);
+        
+        /// Clone Original Opportunity
+        /// After successful cloning in clonedId we will have ID of the cloned Opportunity
+        String clonedId = OpportunityUtilities.cloneOpportunity(newOpp.Id);
+        
+        /// Retrieve cloned Opportunity 
+        Opportunity cloned = [select Id, Amount, Description, TotalOpportunityQuantity,AccountId,CampaignId,CloseDate,ForecastCategoryName,Name,OwnerId,Pricebook2Id,StageName,Type,Contract_Start_Date__c,Length_of_contract_in_months__c,LeadSource,CurrencyIsoCode from Opportunity where Id = :clonedId];
+        system.debug('Name'+ cloned.Name);
+        /// Check if Opportunity is found
+        System.assert(cloned != null);
+        
+        /// Check some fields
+        System.assertEquals(newOpp.Amount, cloned.Amount);
+        system.assertEquals(newOpp.Description, cloned.Description);
+        system.assertEquals(newOpp.TotalOpportunityQuantity, cloned.TotalOpportunityQuantity);
+        //system.assertEquals(newOpp.CloseDate, cloned.CloseDate.newOpp.Contract_end_date__c.addMonths(-1));
+        system.assertEquals(newOpp.ForecastCategoryName, cloned.ForecastCategoryName);
+        system.assertEquals(newOpp.Name + ' 2017', cloned.Name);
+        system.assertEquals(newOpp.OwnerId, cloned.OwnerId);
+        
+        
+    }
+}
