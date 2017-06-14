@@ -3,20 +3,51 @@ trigger LeadTrigger on Lead (before update, before insert , after update) {
     if (Trigger.IsBefore){
         for (Lead l : trigger.new)
         {
-            
-            if ( l.Country == 'USA'  )
+            if(l.Country !=null)
             {
-                l.Zone__c = StateZoneHelper.findZone(l.State);
-                
-            }
-            if ( l.Country != 'USA')
-            {
-                l.Zone__c = CountryZoneHelper.findZone(l.Country);
-                
+                if (
+                    
+                    l.Country.toUpperCase() == 'U.S.A' ||
+                    l.Country.toUpperCase() == 'US' || 
+                    l.Country.toUpperCase() == 'USA' || 
+                    l.Country.toUpperCase() == 'UNITED STATES')
+                {
+                    l.Country = 'USA';
+                    
+                    string state = '';
+                    if (l.State != null)
+                    {
+                        state = StateZoneHelper.findZone(l.State);
+                    }
+                    
+                    l.Zone__c = state;
+                }
+                else
+                {
+                    string zone = '';
+                    if (l.Country.toUpperCase() == 'CANADA')
+                    {
+                        if (l.State !=null)
+                        {
+                            if (l.State.trim() != '')
+                                
+                            {
+                                zone = StateZoneHelper.findZone(l.State);
+                            }
+                        }
+                        l.Zone__c = zone;
+                        
+                    }
+                    else
+                    {
+                        l.Zone__c = CountryZoneHelper.findZone(l.Country);
+                    }
+                }
             }
             
         }
     }
+}
 	
 ***************************************************
 public class StateZoneHelper {
